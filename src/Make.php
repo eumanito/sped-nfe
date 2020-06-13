@@ -506,7 +506,7 @@ class Make
             'xJust'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        
+
         if (empty($std->cNF)) {
             $std->cNF = Keys::random($std->nNF);
         }
@@ -1729,13 +1729,13 @@ class Make
         } catch (\InvalidArgumentException $e) {
             $this->errors[] = "cEANT {$cean} " . $e->getMessage();
         }
-        
+
         try {
             Gtin::isValid($ceantrib);
         } catch (\InvalidArgumentException $e) {
             $this->errors[] = "cEANTrib {$ceantrib} " . $e->getMessage();
         }
-        
+
         $identificador = 'I01 <prod> - ';
         $prod = $this->dom->createElement("prod");
         $this->dom->addChild(
@@ -4925,8 +4925,7 @@ class Make
             'vAliqProd'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        //totalizador
-        $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
+        
         switch ($std->CST) {
             case '01':
             case '02':
@@ -4959,6 +4958,8 @@ class Make
                     true,
                     "[item $std->item] Valor do PIS"
                 );
+                //totalizador
+                $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
                 break;
             case '03':
                 $pisItem = $this->dom->createElement('PISQtde');
@@ -4990,6 +4991,8 @@ class Make
                     true,
                     "[item $std->item] Valor do PIS"
                 );
+                //totalizador
+                $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
                 break;
             case '04':
             case '05':
@@ -5073,6 +5076,8 @@ class Make
                     true,
                     "[item $std->item] Valor do PIS"
                 );
+                //totalizador
+                $this->stdTot->vPIS += (float) !empty($std->vPIS) ? $std->vPIS : 0;
                 break;
         }
         $pis = $this->dom->createElement('PIS');
@@ -5161,12 +5166,12 @@ class Make
             'vAliqProd'
         ];
         $std = $this->equilizeParameters($std, $possible);
-        //totalizador
-        $this->stdTot->vCOFINS += (float) $std->vCOFINS;
         switch ($std->CST) {
             case '01':
             case '02':
                 $confinsItem = $this->buildCOFINSAliq($std);
+                //totalizador
+                $this->stdTot->vCOFINS += (float) $std->vCOFINS;
                 break;
             case '03':
                 $confinsItem = $this->dom->createElement('COFINSQtde');
@@ -5198,6 +5203,8 @@ class Make
                     true,
                     "[item $std->item] Valor do COFINS"
                 );
+                //totalizador
+                $this->stdTot->vCOFINS += (float) $std->vCOFINS;
                 break;
             case '04':
             case '05':
@@ -5232,6 +5239,8 @@ class Make
             case '98':
             case '99':
                 $confinsItem = $this->buildCOFINSoutr($std);
+                //totalizador
+                $this->stdTot->vCOFINS += (float) $std->vCOFINS;
                 break;
         }
         $confins = $this->dom->createElement('COFINS');
@@ -7215,7 +7224,7 @@ class Make
                 $this->dom->appChild($det, $child, "Inclusão do node imposto");
             }
             //insere impostoDevol
-            if (!empty($this->aImpostoDevol)) {
+            if (!empty($this->aImpostoDevol[$nItem])) {
                 $child = $this->aImpostoDevol[$nItem];
                 $this->dom->appChild($det, $child, "Inclusão do node impostoDevol");
             }
@@ -7373,7 +7382,7 @@ class Make
             $this->errors[] = "A chave informada está incorreta [$chave] => [correto: $chaveMontada].";
         }
     }
-    
+
     /**
      * Retorna os erros detectados
      * @return array
@@ -7418,7 +7427,7 @@ class Make
         $comb = $CSRT . $this->chNFe;
         return base64_encode(sha1($comb, true));
     }
-    
+
     protected function conditionalNumberFormatting($value = null, $decimal = 2)
     {
         if (is_numeric($value)) {
